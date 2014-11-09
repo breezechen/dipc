@@ -26,6 +26,7 @@ DWORD WINAPI ServerThread(LPVOID param)
 
 	while(!gServerExit)
 	{
+		ServerReady(server);
 		if (ServerWaitForRequst(server))
 		{
 			int sec = time(NULL) - start;
@@ -67,6 +68,7 @@ DWORD WINAPI ServerThread(LPVOID param)
 				break;
 			}
 			ServerReplied(server);
+			ServerWaitClientDone(server);
 		}
 		else
 		{
@@ -207,12 +209,16 @@ DWORD WINAPI ClientThread(LPVOID param)
 int main(int argc, char **argv)
 {
 	CreateThread(NULL, 0, ServerThread, NULL, 0, NULL);
-	CreateThread(NULL, 0, ClientThread, 0, 0, NULL);
-
+	//Sleep(2000);
+	for (int i = 0; i < 5; i++)
+	{
+		CreateThread(NULL, 0, ClientThread, (LPVOID)i, 0, NULL);
+		//Sleep(2000);
+	}
 	Sleep(2000);
 	gServerExit = TRUE;
 	Sleep(5000);
 	gServerExit = FALSE;
 	CreateThread(NULL, 0, ServerThread, NULL, 0, NULL);
-	Sleep(5000);
+	Sleep(20000);
 }

@@ -16,6 +16,8 @@ typedef struct _IpcServer{
     HANDLE mapFile;
     HANDLE reqEvent;
     HANDLE repEvent;
+	HANDLE readyEvent;
+	HANDLE doneEvent;
     BYTE * buf;
 	DWORD timeout;
 }IpcServer, *PIpcServer;
@@ -33,10 +35,11 @@ IpcServer* ServerCreate(LPCTSTR serverName = NULL);
 #else
 IpcServer* ServerCreate(LPCTSTR serverName);
 #endif
-
+BOOL ServerWaitClientDone(IpcServer* server);
 BOOL ServerWaitForRequst(IpcServer* server);
 VOID ServerReplied(IpcServer* server);
 VOID ServerClose(IpcServer* server);
+VOID ServerReady(IpcServer* server);
 
 #ifdef __cplusplus
 BYTE* ClientRequest(ULONG cmd, const BYTE* data, SIZE_T size, LPCTSTR serverName = NULL, DWORD timeout = 1000);
