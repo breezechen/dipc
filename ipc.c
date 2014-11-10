@@ -6,23 +6,23 @@ IpcServer* ServerCreate(LPCTSTR serverName)
     IpcServer *ret = NULL;
     HANDLE reqEvent = NULL;
     HANDLE repEvent = NULL;
-	HANDLE mapFile = NULL; 
-	BYTE *buf = NULL;
-	TCHAR memName[MAX_NAME_LEN + 5];
-	TCHAR reqeName[MAX_NAME_LEN + 5]; 
-	TCHAR repeName[MAX_NAME_LEN + 5];
+    HANDLE mapFile = NULL; 
+    BYTE *buf = NULL;
+    TCHAR memName[MAX_NAME_LEN + 5];
+    TCHAR reqeName[MAX_NAME_LEN + 5]; 
+    TCHAR repeName[MAX_NAME_LEN + 5];
 
     do 
     {
-		if (serverName == NULL)
-			serverName = TEXT("simple_icp_default");
+        if (serverName == NULL)
+            serverName = TEXT("simple_icp_default");
 
-		if (lstrlen(serverName) > MAX_NAME_LEN)
-			break;
+        if (lstrlen(serverName) > MAX_NAME_LEN)
+            break;
 
-		wsprintf(memName, TEXT("%s_mem"), serverName);
-		wsprintf(reqeName, TEXT("%s_req"), serverName);
-		wsprintf(repeName, TEXT("%s_rep"), serverName);
+        wsprintf(memName, TEXT("%s_mem"), serverName);
+        wsprintf(reqeName, TEXT("%s_req"), serverName);
+        wsprintf(repeName, TEXT("%s_rep"), serverName);
 
         repEvent = CreateEvent(NULL, FALSE, FALSE, repeName);
         if (NULL == repEvent)
@@ -54,7 +54,7 @@ IpcServer* ServerCreate(LPCTSTR serverName)
         ret->buf = buf;
         ret->repEvent = repEvent;
         ret->reqEvent = reqEvent;
-		ret->timeout = 1000;
+        ret->timeout = 1000;
     } while (0);
 
     if (NULL == ret) {
@@ -101,22 +101,21 @@ BYTE* ClientRequest(ULONG cmd, const BYTE* data, SIZE_T size, LPCTSTR serverName
     HANDLE repEvent = NULL;
     CommPacket* packet;
     BYTE* ret = NULL;
-	TCHAR memName[MAX_NAME_LEN + 5];
-	TCHAR reqeName[MAX_NAME_LEN + 5]; 
-	TCHAR repeName[MAX_NAME_LEN + 5];
-	DWORD dw;
+    TCHAR memName[MAX_NAME_LEN + 5];
+    TCHAR reqeName[MAX_NAME_LEN + 5]; 
+    TCHAR repeName[MAX_NAME_LEN + 5];
 
     do 
     {
-		if (serverName == NULL)
-			serverName = TEXT("simple_icp_default");
+        if (serverName == NULL)
+            serverName = TEXT("simple_icp_default");
 
-		if (lstrlen(serverName) > MAX_NAME_LEN)
-			break;
+        if (lstrlen(serverName) > MAX_NAME_LEN)
+            break;
 
-		wsprintf(memName, TEXT("%s_mem"), serverName);
-		wsprintf(reqeName, TEXT("%s_req"), serverName);
-		wsprintf(repeName, TEXT("%s_rep"), serverName);
+        wsprintf(memName, TEXT("%s_mem"), serverName);
+        wsprintf(reqeName, TEXT("%s_req"), serverName);
+        wsprintf(repeName, TEXT("%s_rep"), serverName);
 
         mapFile = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, memName);
         if (NULL == mapFile)
@@ -134,11 +133,11 @@ BYTE* ClientRequest(ULONG cmd, const BYTE* data, SIZE_T size, LPCTSTR serverName
         if (NULL == repEvent)
             break;
 
-		packet = (CommPacket*)buf;
-		packet->size = size + sizeof(CommPacket);
-		packet->cmd = cmd;
-		if (data && size)
-			memcpy(packet->data, data, size);
+        packet = (CommPacket*)buf;
+        packet->size = size + sizeof(CommPacket);
+        packet->cmd = cmd;
+        if (data && size)
+            memcpy(packet->data, data, size);
 
         SetEvent(reqEvent);
         if (WAIT_OBJECT_0 != WaitForSingleObject(repEvent, timeout))
@@ -166,6 +165,4 @@ BYTE* ClientRequest(ULONG cmd, const BYTE* data, SIZE_T size, LPCTSTR serverName
 
     return ret;
 }
-
-
 
