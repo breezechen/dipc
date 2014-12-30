@@ -39,10 +39,11 @@ VOID ServerReplied(IpcServer* server);
 VOID ServerClose(IpcServer* server);
 
 #ifdef __cplusplus
-BYTE* ClientRequest(ULONG cmd, const BYTE* data, SIZE_T size, LPCTSTR serverName = NULL, DWORD timeout = 1000);
+CommPacket* ClientRequest(ULONG cmd, const BYTE* data, SIZE_T size, LPCTSTR serverName = NULL, DWORD timeout = 1000);
 #else
-BYTE* ClientRequest(ULONG cmd, const BYTE* data, SIZE_T size, LPCTSTR serverName, DWORD timeout);
+CommPacket* ClientRequest(ULONG cmd, const BYTE* data, SIZE_T size, LPCTSTR serverName, DWORD timeout);
 #endif
+VOID FreePacket(CommPacket *packet);
 
 
 #ifdef __cplusplus

@@ -93,7 +93,7 @@ VOID ServerClose(IpcServer* server)
     free(server);
 }
 
-BYTE* ClientRequest(ULONG cmd, const BYTE* data, SIZE_T size, LPCTSTR serverName, DWORD timeout)
+CommPacket* ClientRequest(ULONG cmd, const BYTE* data, SIZE_T size, LPCTSTR serverName, DWORD timeout)
 {
     HANDLE mapFile = NULL; 
     BYTE *buf = NULL;
@@ -163,6 +163,11 @@ BYTE* ClientRequest(ULONG cmd, const BYTE* data, SIZE_T size, LPCTSTR serverName
     if (mapFile != NULL)
         CloseHandle(mapFile);
 
-    return ret;
+    return (CommPacket* )ret;
+}
+
+VOID FreePacket(CommPacket *packet)
+{
+    free(packet);
 }
 
