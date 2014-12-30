@@ -89,13 +89,13 @@ DWORD WINAPI ClientThread(LPVOID param)
 			do 
 			{
 				Sleep(rand() % 5);
-				CommPacket *ret = (CommPacket *)ClientRequest(cmd_hello, NULL, 0);
+				CommPacket *ret = ClientRequest(cmd_hello, NULL, 0);
 				if (ret)
 				{
 					if (ret->cmd == cmd_rep_ok) {
 					printf("Client %d: server replied ok\n", no);
 					}
-					free(ret);
+					FreePacket(ret);
 					ok = true;
 				}
 				else 
@@ -113,13 +113,13 @@ DWORD WINAPI ClientThread(LPVOID param)
 				Sleep(rand() % 5);
 				char buf[32];
 				sprintf(buf, "I am client %d", no);
-				CommPacket *ret = (CommPacket *)ClientRequest(cmd_set_str, (BYTE *)buf, strlen(buf) + 1);
+				CommPacket *ret = ClientRequest(cmd_set_str, (BYTE *)buf, strlen(buf) + 1);
 				if (ret)
 				{
 					if (ret->cmd == cmd_rep_ok) {
 					printf("Client %d: server replied ok\n", no);
 					}
-					free(ret);
+					FreePacket(ret);
 					ok = true;
 				}
 				else 
@@ -134,14 +134,14 @@ DWORD WINAPI ClientThread(LPVOID param)
 			do 
 			{
 				Sleep(rand() % 5);
-				CommPacket *ret = (CommPacket *)ClientRequest(cmd_get_str, NULL, 0);
+				CommPacket *ret = ClientRequest(cmd_get_str, NULL, 0);
 				if (ret)
 				{
 					if (ret->cmd == cmd_rep_ok) {
 						char *str = (char *)ret->data;
 					printf("Client %d: server replied->%s\n", no, str);
 					}
-					free(ret);
+					FreePacket(ret);
 					ok = true;
 				}
 				else
@@ -159,13 +159,13 @@ DWORD WINAPI ClientThread(LPVOID param)
 			{
 				Sleep(rand() % 5);
 				ULONG timeout = 2000;
-				CommPacket *ret = (CommPacket *)ClientRequest(cmd_set_server_timeout, (BYTE *)&timeout, sizeof(ULONG));
+				CommPacket *ret = ClientRequest(cmd_set_server_timeout, (BYTE *)&timeout, sizeof(ULONG));
 				if (ret)
 				{
 					if (ret->cmd == cmd_rep_ok) {
 					printf("Client %d: server replied ok\n", no);
 					}
-					free(ret);
+					FreePacket(ret);
 					ok = true;
 				}
 				else
@@ -182,7 +182,7 @@ DWORD WINAPI ClientThread(LPVOID param)
 			do 
 			{
 				Sleep(rand() % 5);
-				CommPacket *ret = (CommPacket *)ClientRequest(44444, NULL, 0);
+				CommPacket *ret = ClientRequest(44444, NULL, 0);
 				if (ret)
 				{
 					if (ret->cmd == cmd_rep_ok) {
@@ -191,7 +191,7 @@ DWORD WINAPI ClientThread(LPVOID param)
 					else if (ret->cmd == cmd_rep_not_support) {
 					printf("Client %d: server replied not support\n", no);
 					}
-					free(ret);
+					FreePacket(ret);
 					ok = true;
 				}
 				else
