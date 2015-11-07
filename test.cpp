@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <time.h>
 #include "ipc.h"
+#include "rtest.h"
 
 BOOL gServerExit = FALSE;
 
@@ -34,14 +35,15 @@ DWORD WINAPI ServerThread(LPVOID param)
 			switch (packet->cmd)
 			{
 			case cmd_hello:
-			printf("%04d Server: get hello\n", sec);
+			    printf("%04d Server: get hello\n", sec);
 				packet->cmd = cmd_rep_ok;
 				packet->size = sizeof(CommPacket);
 				break;
 			case cmd_set_str:
 				{
 					char *str = (char *)packet->data;
-				printf("%d Server: request str->%s\n", sec, str);
+				    printf("%d Server: request str->%s\n", sec, str);
+                    CHECK_EQUAL("cmd_set_str", std::string(str));
 					packet->cmd = cmd_rep_ok;
 					packet->size = sizeof(CommPacket);
 				}
@@ -50,19 +52,19 @@ DWORD WINAPI ServerThread(LPVOID param)
 				strcpy((char *)packet->data, "world");
 				packet->cmd = cmd_rep_ok;
 				packet->size = sizeof(CommPacket) + strlen("world") + 1;
-			printf("%04d Server: ask for reply str->hello\n", sec);
+			    printf("%04d Server: ask for reply str->hello\n", sec);
 				break;
 			case cmd_set_server_timeout:
 				{
 					ULONG* timeout = (ULONG *)packet->data;
 					server->timeout = *timeout;
-				printf("%04d Server: set server wait timeout to %d\n", sec, *timeout);
+				    printf("%04d Server: set server wait timeout to %d\n", sec, *timeout);
 					packet->cmd = cmd_rep_ok;
 					packet->size = sizeof(CommPacket);
 				}
 				break;
 			default:
-			printf("%04d Server: cmd not supported\n", sec);
+			    printf("%04d Server: cmd not supported\n", sec);
 				packet->cmd = cmd_rep_not_support;
 				packet->size = sizeof(CommPacket);
 				break;
@@ -73,7 +75,7 @@ DWORD WINAPI ServerThread(LPVOID param)
 		else
 		{
 			int sec = time(NULL) - start;
-		printf("%04d Server: no request\n", sec);
+		    printf("%04d Server: no request\n", sec);
 		}
 	}
 	ServerClose(server);
@@ -91,18 +93,20 @@ DWORD WINAPI ClientThread(LPVOID param)
 			do 
 			{
 				Sleep(rand() % 5);
+                printf("Client %d: sending request\n", no);
 				CommPacket *ret = (CommPacket *)ClientRequest(cmd_hello, NULL, 0);
 				if (ret)
 				{
-					if (ret->cmd == cmd_rep_ok) {
-					printf("Client %d: server replied ok\n", no);
-					}
-					free(ret);
+// 					if (ret->cmd != cmd_rep_ok) {
+// 					    printf("Client %d: server replied ok\n", no);
+// 					}
+                    CHECK(ret->cmd == cmd_rep_ok);
+					FreePacket(ret);
 					ok = true;
 				}
 				else 
 				{
-				printf("Client %d: oh! timeout~\n", no);
+				    //printf("Client %d: oh! timeout~\n", no);
 					ok = false;
 				}
 			} while (!ok);
@@ -114,19 +118,21 @@ DWORD WINAPI ClientThread(LPVOID param)
 			{
 				Sleep(rand() % 5);
 				char buf[32];
-				sprintf(buf, "I am client %d", no);
+				//sprintf(buf, "I am client %d", no);
+                sprintf(buf, "cmd_set_str");
 				CommPacket *ret = (CommPacket *)ClientRequest(cmd_set_str, (BYTE *)buf, strlen(buf) + 1);
 				if (ret)
 				{
-					if (ret->cmd == cmd_rep_ok) {
-					printf("Client %d: server replied ok\n", no);
-					}
-					free(ret);
+// 					if (ret->cmd == cmd_rep_ok) {
+// 					printf("Client %d: server replied ok\n", no);
+// 					}
+                    CHECK(ret->cmd == cmd_rep_ok);
+					FreePacket(ret);
 					ok = true;
 				}
 				else 
 				{
-				printf("Client %d: oh! timeout~\n", no);
+				    //printf("Client %d: oh! timeout~\n", no);
 					ok = false;
 				}
 			} while (!ok);
@@ -141,14 +147,15 @@ DWORD WINAPI ClientThread(LPVOID param)
 				{
 					if (ret->cmd == cmd_rep_ok) {
 						char *str = (char *)ret->data;
-					printf("Client %d: server replied->%s\n", no, str);
+					    //printf("Client %d: server replied->%s\n", no, str);
+                        CHECK_EQUAL(std::string(str), "world");
 					}
-					free(ret);
+					FreePacket(ret);
 					ok = true;
 				}
 				else
 				{
-				printf("Client %d: oh! timeout~\n", no);
+				    //printf("Client %d: oh! timeout~\n", no);
 					ok = false;
 				}
 			} while (!ok);
@@ -164,15 +171,16 @@ DWORD WINAPI ClientThread(LPVOID param)
 				CommPacket *ret = (CommPacket *)ClientRequest(cmd_set_server_timeout, (BYTE *)&timeout, sizeof(ULONG));
 				if (ret)
 				{
-					if (ret->cmd == cmd_rep_ok) {
-					printf("Client %d: server replied ok\n", no);
-					}
-					free(ret);
+// 					if (ret->cmd == cmd_rep_ok) {
+// 					printf("Client %d: server replied ok\n", no);
+// 					}
+                    CHECK(ret->cmd == cmd_rep_ok);
+					FreePacket(ret);
 					ok = true;
 				}
 				else
 				{
-				printf("Client %d: oh! timeout~\n", no);
+				    //printf("Client %d: oh! timeout~\n", no);
 					ok = false;
 				}
 			} while (!ok);
@@ -187,18 +195,18 @@ DWORD WINAPI ClientThread(LPVOID param)
 				CommPacket *ret = (CommPacket *)ClientRequest(44444, NULL, 0);
 				if (ret)
 				{
-					if (ret->cmd == cmd_rep_ok) {
-					printf("Client %d: server replied ok\n", no);
-					}
-					else if (ret->cmd == cmd_rep_not_support) {
-					printf("Client %d: server replied not support\n", no);
-					}
-					free(ret);
+// 					if (ret->cmd == cmd_rep_ok) {
+// 					    printf("Client %d: server replied ok\n", no);
+// 					} else if (ret->cmd == cmd_rep_not_support) {
+// 					    printf("Client %d: server replied not support\n", no);
+// 					}
+                    CHECK(ret->cmd == cmd_rep_not_support);
+					FreePacket(ret);
 					ok = true;
 				}
 				else
 				{
-				printf("Client %d: oh! timeout~\n", no);
+				    //printf("Client %d: oh! timeout~\n", no);
 					ok = false;
 				}
 			} while (!ok);
