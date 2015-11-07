@@ -88,9 +88,14 @@ namespace dipc
     client::~client() { }
 
     std::vector<unsigned char> client::request(int cmd, unsigned char* data, int data_size) {
+        std::vector<unsigned char> ret;
         CommPacket* packet = ClientRequest(cmd, data, data_size, server_name.c_str(), timeout);
-        std::vector<unsigned char> ret((unsigned char*)packet, (unsigned char*)packet + packet->size);
-        FreePacket(packet);
+        if (packet) {
+            if (packet->cmd == cmd) {
+                ret.insert(ret.begin(), (unsigned char*)packet->data, (unsigned char*)packet + packet->size);
+            }
+            FreePacket(packet);
+        }
         return ret;
     }
 }
