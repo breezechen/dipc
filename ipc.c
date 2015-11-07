@@ -14,19 +14,11 @@ IpcServer* ServerCreate(LPCTSTR serverName)
 
     do 
     {
-<<<<<<< HEAD
-        if (serverName == NULL)
-            serverName = TEXT("simple_icp_default");
-=======
 		if (serverName == NULL || serverName[0] == '\0')
 			serverName = TEXT("simple_icp_default");
 
 		if (lstrlen(serverName) > MAX_NAME_LEN)
 			break;
->>>>>>> fix errs.
-
-        if (lstrlen(serverName) > MAX_NAME_LEN)
-            break;
 
         wsprintf(memName, TEXT("%s_mem"), serverName);
         wsprintf(reqeName, TEXT("%s_req"), serverName);
@@ -115,13 +107,8 @@ CommPacket* ClientRequest(ULONG cmd, const BYTE* data, SIZE_T size, LPCTSTR serv
 
     do 
     {
-<<<<<<< HEAD
-        if (serverName == NULL)
-            serverName = TEXT("simple_icp_default");
-=======
 		if (serverName == NULL || serverName[0] == '\0')
 			serverName = TEXT("simple_icp_default");
->>>>>>> fix errs.
 
         if (lstrlen(serverName) > MAX_NAME_LEN)
             break;
