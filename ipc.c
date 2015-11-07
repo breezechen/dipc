@@ -18,7 +18,7 @@ IpcServer* ServerCreate(LPCTSTR serverName)
 
     do 
     {
-		if (serverName == NULL)
+		if (serverName == NULL || serverName[0] == '\0')
 			serverName = TEXT("simple_icp_default");
 
 		if (lstrlen(serverName) > MAX_NAME_LEN)
@@ -131,7 +131,7 @@ VOID ServerClose(IpcServer* server)
     free(server);
 }
 
-BYTE* ClientRequest(ULONG cmd, const BYTE* data, SIZE_T size, LPCTSTR serverName, DWORD timeout)
+CommPacket* ClientRequest(ULONG cmd, const BYTE* data, SIZE_T size, LPCTSTR serverName, DWORD timeout)
 {
     HANDLE mapFile = NULL; 
     BYTE *buf = NULL;
@@ -150,7 +150,7 @@ BYTE* ClientRequest(ULONG cmd, const BYTE* data, SIZE_T size, LPCTSTR serverName
 
     do 
     {
-		if (serverName == NULL)
+		if (serverName == NULL || serverName[0] == '\0')
 			serverName = TEXT("simple_icp_default");
 
 		if (lstrlen(serverName) > MAX_NAME_LEN)
@@ -198,7 +198,7 @@ BYTE* ClientRequest(ULONG cmd, const BYTE* data, SIZE_T size, LPCTSTR serverName
         if (WAIT_OBJECT_0 != WaitForSingleObject(repEvent, timeout))
             break;
 
-        if (packet->size == 0)
+        if (packet->size > MEMMAP_SIZE || packet->size == 0)
             break;
 
         ret = (BYTE*)malloc(packet->size);
@@ -223,8 +223,11 @@ BYTE* ClientRequest(ULONG cmd, const BYTE* data, SIZE_T size, LPCTSTR serverName
     if (mapFile != NULL)
         CloseHandle(mapFile);
 
-    return ret;
+    return (CommPacket* )ret;
 }
 
-
+VOID FreePacket(CommPacket *packet)
+{
+    free(packet);
+}
 
