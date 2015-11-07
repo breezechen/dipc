@@ -6,11 +6,10 @@ extern "C" {
 #include "ipc.c"
 };
 
-#include "dipc.h"
+#include "ipcpp.h"
 
 namespace dipc
 {
-  
     mutex::mutex()   {};
     mutex::~mutex()  {};
     void mutex::lock()    {
@@ -68,6 +67,7 @@ namespace dipc
 
     void server::stop() { stop_ = true; }
     void server::route(int cmd, pf_handler handler) {
+        locker l(this->mr_);
         std::vector<router>::iterator it = routers_.begin();
         for (; it != routers_.end(); it++)
         {
