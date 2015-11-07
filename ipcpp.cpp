@@ -1,6 +1,7 @@
 #include <Windows.h>
 #include <string>
 
+// or paste `ipc.h` and `ipc.c`'s code here.
 #include "ipc.h"
 extern "C" {
 #include "ipc.c"
@@ -32,7 +33,7 @@ namespace dipc
     server::server(const std::tstring& name, int timeout) :
     data_(NULL), stop_(false), routers_() {
         do  {
-            data_ = ServerCreate(name.empty()?(NULL):(name.c_str()));
+            data_ = ServerCreate(name.c_str());
             if (data_) {
                 data_->timeout = timeout;
             }
@@ -42,6 +43,9 @@ namespace dipc
     server::~server(){ }
 
     void server::run() {
+        if (!data_) {
+            return;
+        }
         stop_ = false;
         while(!stop_) {
             ServerReady(data_);

@@ -68,7 +68,7 @@ namespace dipc
         client(const std::tstring& server_name = std::tstring(), int timeout = 1000);
         ~client();
 
-        std::vector<unsigned char> request(int cmd, unsigned char* data, int data_size);
+        std::vector<unsigned char> request(int cmd, unsigned char* data = NULL, int data_size = 0);
     private:
         std::string server_name;
         int timeout;
