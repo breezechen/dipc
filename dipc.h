@@ -1,0 +1,78 @@
+#ifndef _DIPC_H_
+#define _DIPC_H_
+
+#ifdef _UNICODE
+#include <wstring>
+#else
+#include <string>
+#endif
+
+#include <vector>
+
+#include "ipc.h"
+
+namespace dipc
+{
+    class mutex
+    {
+    private:
+        volatile LONG interlock_;
+    public:
+        mutex();
+        ~mutex();
+    private:
+        void lock();
+        void unlock();
+        friend class locker;
+    };
+
+    class locker
+    {
+        mutex&    m_;
+    public:
+        locker(mutex& m);
+        ~locker();
+    };
+
+    typedef int (*pf_handler)(unsigned char* data);
+
+#ifdef _UNICODE
+#define  tstring    wstring
+#else
+#define  tstring    string
+#endif
+
+    class server {
+        struct router {
+            int cmd;
+            pf_handler handler;
+        };
+        typedef IpcServer server_data;
+
+    public:
+        server(const std::tstring& name = std::tstring(), int timeout = 1000);
+        ~server();
+        void run();
+        void stop();
+        void route(int cmd, pf_handler handler);
+
+    private:
+        bool stop_;
+        mutex mr_;
+        std::vector<router> routers_;
+        struct server_data* data_;
+    };
+
+    class client {
+    public:
+        client(const std::tstring& server_name = std::tstring(), int timeout = 1000);
+        ~client();
+
+        std::vector<unsigned char> request(int cmd, unsigned char* data, int data_size);
+    private:
+        std::string server_name;
+        int timeout;
+    };
+}
+
+#endif
