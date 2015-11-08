@@ -38,11 +38,13 @@ int main(int argc, char** argv)
     s.route(cmd_getint, on_cmd_getint);
 
     {
+        dipc::client clt;
         std::vector<unsigned char> ret = clt.request(cmd_getstr, NULL, 0);
         std::string str((char*)&ret[0]);
         CHECK_EQUAL(std::string("hello, world!"), str);
     }
     {
+        dipc::client clt;
         std::vector<unsigned char> ret = clt.request(cmd_getint, NULL, 0);
         int len = *(int*)(&ret[0]);
         CHECK_EQUAL(len, 123456);
@@ -56,7 +58,7 @@ int main(int argc, char** argv)
 
 License?
 --------
-It's under MIT.
+Do whatever you want!
 
 The unit test lib from <https://github.com/rioki/rtest.git>. Check license <https://github.com/rioki/rtest#license>.
 
