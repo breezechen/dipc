@@ -58,7 +58,7 @@ int main(int argc, char** argv)
 
 License?
 --------
-It's under MIT.
+Do whatever you want!
 
 The unit test lib from <https://github.com/rioki/rtest.git>. Check license <https://github.com/rioki/rtest#license>.
 
