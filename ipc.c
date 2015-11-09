@@ -146,7 +146,6 @@ CommPacket* ClientRequest(ULONG cmd, const BYTE* data, SIZE_T size, LPCTSTR serv
 	TCHAR repeName[MAX_NAME_LEN + 5];
 	TCHAR readyeName[MAX_NAME_LEN + 5];
 	TCHAR doneeName[MAX_NAME_LEN + 5];
-	DWORD dw;
 
     do 
     {

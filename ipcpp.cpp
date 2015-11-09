@@ -51,7 +51,7 @@ namespace dipc
             ServerReady(data_);
             if (ServerWaitForRequst(data_)) {
                 CommPacket* packet = (CommPacket*)data_->buf;
-                int i = 0;
+                std::vector<router>::size_type i = 0;
                 for (; i < routers_.size(); i++)
                 {
                     if (routers_[i].cmd == packet->cmd) {
@@ -91,8 +91,8 @@ namespace dipc
 
     client::~client() { }
 
-    std::vector<unsigned char> client::request(int cmd, unsigned char* data, int data_size) {
-        std::vector<unsigned char> ret;
+    byte_array client::request(int cmd, unsigned char* data, int data_size) {
+        byte_array ret;
         CommPacket* packet = ClientRequest(cmd, data, data_size, server_name.c_str(), timeout);
         if (packet) {
             if (packet->cmd == cmd) {

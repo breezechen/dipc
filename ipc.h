@@ -22,11 +22,14 @@ typedef struct _IpcServer{
 	DWORD timeout;
 }IpcServer, *PIpcServer;
 
+#pragma warning( push )
+#pragma warning(disable:4200)
 typedef struct _CommPacket{
     ULONG   size;
     ULONG   cmd;
     BYTE data[0];
 }CommPacket, *PCommPacket;
+#pragma warning( pop )
 
 #pragma pack(pop)
 

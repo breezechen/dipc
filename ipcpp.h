@@ -1,12 +1,6 @@
 #ifndef _DIPC_H_
 #define _DIPC_H_
 
-#ifdef _UNICODE
-#include <wstring>
-#else
-#include <string>
-#endif
-
 #include <vector>
 
 #include "ipc.h"
@@ -63,14 +57,16 @@ namespace dipc
         struct server_data* data_;
     };
 
+    typedef std::vector<unsigned char> byte_array;
+
     class client {
     public:
         client(const std::tstring& server_name = std::tstring(), int timeout = 1000);
         ~client();
 
-        std::vector<unsigned char> request(int cmd, unsigned char* data = NULL, int data_size = 0);
+        byte_array request(int cmd, unsigned char* data = NULL, int data_size = 0);
     private:
-        std::string server_name;
+        std::tstring server_name;
         int timeout;
     };
 }
