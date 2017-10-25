@@ -91,9 +91,9 @@ namespace dipc
 
     client::~client() { }
 
-    byte_array client::request(int cmd, unsigned char* data, int data_size) {
-        byte_array ret;
-        CommPacket* packet = ClientRequest(cmd, data, data_size, server_name.c_str(), timeout);
+    std::string client::request(int cmd, const std::string& data) {
+		std::string ret;
+        CommPacket* packet = ClientRequest(cmd, (const unsigned char*)data.c_str(), data.size(), server_name.c_str(), timeout);
         if (packet) {
             if (packet->cmd == cmd) {
                 ret.insert(ret.begin(), (unsigned char*)packet->data, (unsigned char*)packet + packet->size);

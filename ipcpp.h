@@ -41,7 +41,6 @@ namespace dipc
             int cmd;
             pf_handler handler;
         };
-        typedef IpcServer server_data;
 
     public:
         server(const std::tstring& name = std::tstring(), int timeout = 1000);
@@ -54,17 +53,15 @@ namespace dipc
         bool stop_;
         mutex mr_;
         std::vector<router> routers_;
-        struct server_data* data_;
+		IpcServer* data_;
     };
-
-    typedef std::vector<unsigned char> byte_array;
 
     class client {
     public:
         client(const std::tstring& server_name = std::tstring(), int timeout = 1000);
         ~client();
 
-        byte_array request(int cmd, unsigned char* data = NULL, int data_size = 0);
+		std::string request(int cmd, const std::string& data = std::string());
     private:
         std::tstring server_name;
         int timeout;
