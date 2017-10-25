@@ -28,7 +28,7 @@ namespace dipc
         ~locker();
     };
 
-    typedef int (*pf_handler)(unsigned char* data);
+    typedef int (*pf_handler)(unsigned char* data, int dsize);
 
 #ifdef _UNICODE
 #define  tstring    wstring

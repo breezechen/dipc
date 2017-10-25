@@ -55,7 +55,7 @@ namespace dipc
                 for (; i < routers_.size(); i++)
                 {
                     if (routers_[i].cmd == packet->cmd) {
-                        packet->size = routers_[i].handler((unsigned char*)packet->data) + sizeof(CommPacket);
+                        packet->size = routers_[i].handler((unsigned char*)packet->data, packet->size - sizeof(CommPacket)) + sizeof(CommPacket);
                         break;
                     }
                 }
