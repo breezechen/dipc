@@ -70,7 +70,7 @@ namespace dipc
     }
 
     void server::stop() { stop_ = true; }
-    void server::route(int cmd, pf_handler handler) {
+    void server::route(int cmd, std::function<int(unsigned char*, int)> handler) {
         locker l(this->mr_);
         std::vector<router>::iterator it = routers_.begin();
         for (; it != routers_.end(); it++)

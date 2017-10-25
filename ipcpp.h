@@ -2,6 +2,7 @@
 #define _DIPC_H_
 
 #include <vector>
+#include <functional>
 
 #include "ipc.h"
 
@@ -28,7 +29,6 @@ namespace dipc
         ~locker();
     };
 
-    typedef int (*pf_handler)(unsigned char* data, int dsize);
 
 #ifdef _UNICODE
 #define  tstring    wstring
@@ -39,7 +39,7 @@ namespace dipc
     class server {
         struct router {
             int cmd;
-            pf_handler handler;
+            std::function<int(unsigned char*, int)> handler;
         };
 
     public:
@@ -47,7 +47,7 @@ namespace dipc
         ~server();
         void run();
         void stop();
-        void route(int cmd, pf_handler handler);
+        void route(int cmd, std::function<int(unsigned char*, int)> handler);
 
     private:
         bool stop_;
