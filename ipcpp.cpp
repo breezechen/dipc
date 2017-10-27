@@ -40,7 +40,9 @@ namespace dipc
         } while (false);
     }
 
-    server::~server(){ }
+    server::~server() { 
+		ServerClose(data_);
+	}
 
     void server::run() {
         if (!data_) {
