@@ -22,21 +22,21 @@ int usleep(long usec)
 #define  cmd_getint 145
 #define  cmd_inc    146
 
-int on_cmd_getstr(unsigned char* data)
+int on_cmd_getstr(unsigned char* data, int dsize)
 {
     int len = strlen("hello, world!");
     memcpy(data, "hello, world!", len + 1);
     return len + 1;
 }
 
-int on_cmd_getint(unsigned char* data)
+int on_cmd_getint(unsigned char* data, int dsize)
 {
     int len = 123456;
     memcpy(data, &len, sizeof(int));
     return sizeof(int);
 }
 
-int on_cmd_inc(unsigned char* data)
+int on_cmd_inc(unsigned char* data, int dsize)
 {
     int i = *(int *)data;
     i++;
@@ -44,21 +44,21 @@ int on_cmd_inc(unsigned char* data)
     return sizeof(int);
 }
 
-int on_cmd_getstr2(unsigned char* data)
+int on_cmd_getstr2(unsigned char* data, int dsize)
 {
     int len = strlen("wahahaha!");
     memcpy(data, "wahahaha!", len + 1);
     return len + 1;
 }
 
-int on_cmd_getint2(unsigned char* data)
+int on_cmd_getint2(unsigned char* data, int dsize)
 {
     int len = 445566;
     memcpy(data, &len, sizeof(int));
     return sizeof(int);
 }
 
-int on_cmd_inc2(unsigned char* data)
+int on_cmd_inc2(unsigned char* data, int dsize)
 {
     int i = *(int *)data;
     i += 2;
@@ -159,10 +159,10 @@ DWORD WINAPI ClientThread(LPVOID lp)
 
         //Sleep(ms);
         {
-            std::vector<unsigned char> ret = clt->request(cmd_getstr, NULL, 0);
+            std::string ret = clt->request(cmd_getstr);
             //         CommPacket* packet = (CommPacket*)&ret[0];
             //         CHECK(packet->cmd == cmd_hello);
-            std::string str((char*)&ret[0]);
+            //std::string str((char*)&ret[0]);
             //CHECK_EQUAL(std::string("hello, world!"), str);
             //printf("thread %d recived: \t\t%s\n", no, str.c_str());
             CHECK(ret.size());
@@ -176,9 +176,9 @@ DWORD WINAPI ClientThread(LPVOID lp)
             //printf("thread %d sleeped %d ms\n", no, ms);
         }
         {
-            std::vector<unsigned char> ret = clt->request(cmd_getint, NULL, 0);
+			std::string ret = clt->request(cmd_getint);
             //CommPacket* packet = (CommPacket*)&ret[0];
-            int len = *(int*)(&ret[0]);
+            int len = *(int*)(ret.c_str());
             //CHECK_EQUAL(len, 123456);
             //printf("thread %d recived: \t\t%d\n", no, len);
             CHECK(ret.size());
@@ -193,9 +193,9 @@ DWORD WINAPI ClientThread(LPVOID lp)
         }
         {
             int data = rand() % 1000;
-            std::vector<unsigned char> ret = clt->request(cmd_inc, (unsigned char*)&data, sizeof(int));
+			std::string ret = clt->request(cmd_inc, std::string((char*)&data, sizeof(int)));
             //CommPacket* packet = (CommPacket*)&ret[0];
-            int bak = *(int*)(&ret[0]);
+            int bak = *(int*)(ret.c_str());
             //CHECK_EQUAL(bak, data + 1);
             //printf("thread %d sent: \t\t%d --> recived: \t\t%d\n", no, data, bak);
             CHECK(ret.size());
@@ -233,6 +233,7 @@ int main()
     s.route(cmd_getstr, on_cmd_getstr);
     s.route(cmd_getint, on_cmd_getint);
     s.route(cmd_inc, on_cmd_inc);
+
     
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ServerThread, (LPVOID)&s, 0, NULL);
 
